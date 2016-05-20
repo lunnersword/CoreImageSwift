@@ -26,35 +26,42 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let fileURL = NSBundle.mainBundle().URLForResource("image", withExtension: "png")
-        beginImage = CIImage(contentsOfURL: fileURL!)
-        filter = self.chainFilters(self.getGloomFilter(beginImage), secondFilter: self.getDumpDistortionFilter(beginImage))
-        realtimeRender = true
-        if realtimeRender {
-            #if os(iOS)
-                let myEAGLContext = EAGLContext(API: .OpenGLES2)
-                context = CIContext(EAGLContext: myEAGLContext, options: [kCIContextWorkingColorSpace: NSNull()])
-            #elseif os(OSX)
-                context = CIContext(CGContext: NSGraphicsContext.currentContext().graphicsPort, options: nil)
-                //[[NSGraphicsContext currentContext] CIContext]
-            #endif
-        } else {
-            context = CIContext(options: nil)
-        }
+//        let fileURL = NSBundle.mainBundle().URLForResource("image", withExtension: "png")
+//        beginImage = CIImage(contentsOfURL: fileURL!)
+//        filter = self.chainFilters(self.getGloomFilter(beginImage), secondFilter: self.getDumpDistortionFilter(beginImage))
+//        realtimeRender = true
+//        if realtimeRender {
+//            #if os(iOS)
+//                let myEAGLContext = EAGLContext(API: .OpenGLES2)
+//                context = CIContext(EAGLContext: myEAGLContext, options: [kCIContextWorkingColorSpace: NSNull()])
+//            #elseif os(OSX)
+//                context = CIContext(CGContext: NSGraphicsContext.currentContext().graphicsPort, options: nil)
+//                //[[NSGraphicsContext currentContext] CIContext]
+//            #endif
+//        } else {
+//            context = CIContext(options: nil)
+//        }
+//        
+//        let cgImage = context.createCGImage(filter.outputImage!, fromRect: filter.outputImage!.extent)
+//        
+//        let newImage = UIImage(CGImage: cgImage)
+//        
+
+//        imageView.image = newImage;
+//        imageView.contentMode = .ScaleAspectFit
+//        
+        let transView = TransitionView()
+        transView.frame = CGRectMake(0, 0, 300, 300)
+        transView.center = view.center
         
-        let cgImage = context.createCGImage(filter.outputImage!, fromRect: filter.outputImage!.extent)
         
-        let newImage = UIImage(CGImage: cgImage)
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(ViewController.imageViewTaped))
+//        imageView.addGestureRecognizer(tap)
+//        imageView.userInteractionEnabled = true
         
-        imageView.frame = view.bounds
-        imageView.image = newImage;
-        imageView.contentMode = .ScaleAspectFit
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(ViewController.imageViewTaped))
-        imageView.addGestureRecognizer(tap)
-        imageView.userInteractionEnabled = true
-        view.addSubview(imageView)
-        calledFromViewDidLoadForTransition()
+        view.addSubview(transView)
+        
     }
     
         

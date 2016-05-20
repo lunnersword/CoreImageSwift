@@ -7,17 +7,48 @@
 //
 
 import UIKit
+import CoreImage
 
 class TransitionView: UIView {
+    var context: CIContext!
+        
+    
     var beginImage: CIImage!
     var targetImage: CIImage!
     var base: NSTimeInterval!
     var transtion: CIFilter!
-    let thumbnailWidth: CGFloat = 340.0
-    let thumbnailHeight: CGFloat = 240.0
+    let thumbnailWidth: CGFloat = 300.0
+    let thumbnailHeight: CGFloat = 300.0
+    var realtimeRender = false
+    
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        let fileURL = NSBundle.mainBundle().URLForResource("image", withExtension: "png")
+        beginImage = CIImage(contentsOfURL: fileURL!)
+        realtimeRender = true
+        if realtimeRender {
+            #if os(iOS)
+                let myEAGLContext = EAGLContext(API: .OpenGLES2)
+                context = CIContext(EAGLContext: myEAGLContext, options: [kCIContextWorkingColorSpace: NSNull()])
+            #elseif os(OSX)
+                context = CIContext(CGContext: NSGraphicsContext.currentContext().graphicsPort, options: nil)
+                //[[NSGraphicsContext currentContext] CIContext]
+            #endif
+        } else {
+            context = CIContext(options: nil)
+        }
+        
+        calledFromViewDidLoadForTransition()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func calledFromViewDidLoadForTransition() {
-        let timer = NSTimer(timeInterval: 1.0/30.0, target: self, selector: #selector(ViewController.timerFired), userInfo: nil, repeats: true)
+        let timer = NSTimer(timeInterval: 1.0/30.0, target: self, selector: #selector(TransitionView.timerFired), userInfo: nil, repeats: true)
         
         let url = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("download", ofType: "jpeg")!)
         self.targetImage = CIImage(contentsOfURL: url)
@@ -26,6 +57,7 @@ class TransitionView: UIView {
         
         NSRunLoop.currentRunLoop().addTimer(timer, forMode:NSRunLoopCommonModes)
         //NSRunLoop.currentRunLoop().addTimer(timer, forMode: NSEventTrackingRunLoopMode)
+    
     }
 
     
@@ -36,6 +68,9 @@ class TransitionView: UIView {
         transtion.setValue(extent, forKey: kCIInputExtentKey)
     }
     
+    func layerClass() -> AnyClass {
+        return CAEAGLayer.self
+    }
     
     override func drawRect(rectangle: CGRect) {
         let cg = CGRectMake(CGRectGetMinX(rectangle), CGRectGetMinY(rectangle), CGRectGetWidth(rectangle), CGRectGetHeight(rectangle))
@@ -60,7 +95,7 @@ class TransitionView: UIView {
     }
     
     func timerFired(sender: AnyObject?) {
-        self.drawRect(CGRectMake(200, 200, 300, 400))
+        self.drawRect(CGRectMake(0, 0, 300, 300))
     }
 
 
