@@ -68,8 +68,8 @@ class TransitionView: UIView {
         transtion.setValue(extent, forKey: kCIInputExtentKey)
     }
     
-    func layerClass() -> AnyClass {
-        return CAEAGLayer.self
+    override class func layerClass() -> AnyClass {
+       return CAEAGLLayer.self
     }
     
     override func drawRect(rectangle: CGRect) {
